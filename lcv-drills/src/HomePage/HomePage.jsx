@@ -19,7 +19,7 @@ class HomePage extends Component {
     render(){
         return(
             <div>
-                <Title>This is the Title</Title>
+                <Title>LC VOUGHT CO</Title>
                 <p>{this.state.message}</p>
             </div>
         )
