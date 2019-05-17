@@ -8,7 +8,14 @@ const Navbar = styled.nav`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    a { color: white; text-decoration: none; }
+    a { 
+        color: white;
+        text-decoration: none;
+
+        :hover {
+            color: black;
+        }
+    }
 `;
 
 const Brand = styled.a`
