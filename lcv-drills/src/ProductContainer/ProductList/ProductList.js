@@ -5,37 +5,112 @@ class ProductList extends Component {
         super();
         this.state = {
             data: {
+                key: "none",
                 company: "none",
                 type: "none"
             },
-            isDisabled: false,
-            canGetParts: true
+            companyPicked: false,
+            canGetParts: true,
+            companyList: {
+                gardnerDenver: {
+                    stringName: "Gardner Denver",
+                    partTypes: [
+                        "Portable Compressor Parts and More",
+                        "Drill Parts",
+                        "Pump Parts"
+                    ]
+                },
+                atlasCopCo: {
+                    stringName: "Atlas Copco",
+                    partTypes:[
+                        "Parts List"
+                    ]
+                },
+                joy: {
+                    stringName: "Joy",
+                    partTypes: [
+                        "Drill Parts",
+                        "Compressor Parts"
+                    ]
+                },
+                chicagoPneumatic: {
+                    stringName: "Chicago Pneumatic",
+                    partTypes: [
+                        "Drill Parts",
+                        "Compressor Parts"
+                    ]
+                },
+                ingersollRand: {
+                    stringName: "Ingersoll Rand",
+                    partTypes: [
+                        "Drill Parts",
+                        "Compressor Parts"
+                    ],
+                }
+            },
+            companies: null,
+            types: null
         }
     }
+    componentDidMount(){
+        this.setCompanies();
+    }
 
-    handleChange = async (e) => {
+    setCompanies = () => {
+        const companies = Object.keys(this.state.companyList).map((company, i)=>{
+            console.log(company);
+            return(
+                <option key={i} value={company}>{this.state.companyList[company].stringName}</option>
+            )
+        });
+        this.setState({
+            companies: companies
+        })
+    }
+
+    setPartTypes = (company) => {
+        const types = this.state.companyList[company].partTypes.map((type, i)=>{
+            return(
+                <option key={i} value={type}>{type}</option>
+            )
+        });
+
+        this.setState({
+            types: types
+        });
+    }
+
+    handleChangeCompany = (e) => {
+        const company = e.target.value;
+
+        this.setState({
+            data:{
+                ...this.state.data,
+                company: this.state.companyList[company].stringName,
+                key: company
+            },
+        });
+
+        this.setPartTypes(company);
+    }
+
+    handleChangeType = async (e) => {
         await this.setState({
             data:{
                 ...this.state.data,
-                [e.target.name]: e.target.value
+                type: e.target.value
             },
             canGetParts: true
         });
-
-        this.checkFormCompletion();
-
+        console.log(this.state.data);
+        this.props.getTheParts(this.state.data);
     }
 
     checkFormCompletion = (e) => {
-        if(this.state.data.company != "none" && this.state.data.type != "none"){
-            console.log('gonna get the parts');
-            console.log(this.state.data);
-            this.props.getTheParts(this.state.data);
-
+            
             this.setState({
                 canGetParts: false
             })
-        }
     }
 
     render(){
@@ -52,16 +127,17 @@ class ProductList extends Component {
                 <form>
                 <label>
                     Company:
-                    <select disabled={this.state.isDisabled} name="company" onChange={this.handleChange} value={this.state.data.company} >
+                    <select disabled={this.state.isDisabled} name="company" onChange={this.handleChangeCompany} value={this.state.data.key} >
                         <option value="none">Select Company</option>
-                        <option value="Gardner Denver">Gardner Denver</option>
+                        {this.state.companies}
                     </select>
                 </label>
                 <label>
                     Type:
-                    <select name="type" onChange={this.handleChange} value={this.state.data.type} >
+                    
+                    <select name="type" onChange={this.handleChangeType} value={this.state.data.type} >
                         <option value="none">Select Category</option>
-                        <option value="Compressor Parts and More">Compressor Parts and More</option>
+                        {this.state.types}
                     </select>
                 </label>
                 </form>
