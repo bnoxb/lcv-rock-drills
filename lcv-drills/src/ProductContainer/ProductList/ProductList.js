@@ -5,7 +5,7 @@ class ProductList extends Component {
         super();
         this.state = {
             data: {
-                key: "none",
+                companyKey: "none",
                 company: "none",
                 type: "none"
             },
@@ -87,7 +87,7 @@ class ProductList extends Component {
             data:{
                 ...this.state.data,
                 company: this.state.companyList[company].stringName,
-                key: company
+                companyKey: company
             },
         });
 
