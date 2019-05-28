@@ -9,7 +9,44 @@ class ProductContainer extends Component {
             createProduct: false,
             showProducts: false,
             message: "",
-            partsList: []
+            partsList: [],
+            companyList: {
+                gardnerDenver: {
+                    stringName: "Gardner Denver",
+                    partTypes: [
+                        "Portable Compressor Parts and More",
+                        "Drill Parts",
+                        "Pump Parts"
+                    ]
+                },
+                atlasCopCo: {
+                    stringName: "Atlas Copco",
+                    partTypes:[
+                        "Parts List"
+                    ]
+                },
+                joy: {
+                    stringName: "Joy",
+                    partTypes: [
+                        "Drill Parts",
+                        "Compressor Parts"
+                    ]
+                },
+                chicagoPneumatic: {
+                    stringName: "Chicago Pneumatic",
+                    partTypes: [
+                        "Drill Parts",
+                        "Compressor Parts"
+                    ]
+                },
+                ingersollRand: {
+                    stringName: "Ingersoll Rand",
+                    partTypes: [
+                        "Drill Parts",
+                        "Compressor Parts"
+                    ],
+                }
+            },
         }
     }
 
@@ -58,6 +95,8 @@ class ProductContainer extends Component {
     }
 
     getTheParts = async (params) => {
+        console.log('gonna get the parts');
+        console.log(params);
         try{
             const stringURL = `http://localhost:9000/parts/browse/${params.company}/${params.type}`;
             const response = await fetch(stringURL);
@@ -80,8 +119,8 @@ class ProductContainer extends Component {
         return(
             <div>
                 {this.state.message}
-                {this.state.createProduct ? <CreateProduct closeForm={this.createButton} upload={this.upload} /> : <button onClick={this.createButton}>UPLOAD CSV</button> }
-                {this.state.showProducts ? <ProductList partsList={this.state.partsList} getTheParts={this.getTheParts} /> : <button onClick={this.showListButton}>Browse Parts</button>}
+                {this.state.createProduct ? <CreateProduct closeForm={this.createButton} upload={this.upload} companyList={this.state.companyList}/> : <button onClick={this.createButton}>UPLOAD CSV</button> }
+                {this.state.showProducts ? <ProductList partsList={this.state.partsList} getTheParts={this.getTheParts} companyList={this.state.companyList}/> : <button onClick={this.showListButton}>Browse Parts</button>}
             </div>
 
         )
