@@ -6,23 +6,44 @@ class CreateProduct extends Component {
         this.state = {
             data:{
                 company: "none",
+                companyKey: "none",
                 type: "none",
                 part_number: "",
                 file: null
             },
-            message: ""
+            showTypes: false,
+            message: "",
+            types: null,
+            companies: null
             
         }
     }
 
-    handleChange = (e) => {
-        console.log(e.target.value);
+    componentDidMount(){
+        this.setCompanies();
+    }
+
+    handleChangeCompany = (e) => {
+        const company = e.target.value;
         this.setState({
             data:{
                 ...this.state.data,
-                [e.target.name]: e.target.value,
-            }
-        })
+                company: this.props.companyList[company].stringName,
+                companyKey: company
+            },
+        });
+
+        this.setPartTypes(company);
+    }
+
+    handleChangeType = async (e) => {
+        await this.setState({
+            data:{
+                ...this.state.data,
+                type: e.target.value
+            },
+            canGetParts: true
+        });
     }
 
     handleChangeFile = (e) => {
@@ -35,11 +56,33 @@ class CreateProduct extends Component {
         })
     }
 
+    setCompanies = () => {
+        const companies = Object.keys(this.props.companyList).map((company, i)=>{
+            return(
+                <option key={i} value={company}>{this.props.companyList[company].stringName}</option>
+            )
+        });
+        this.setState({
+            companies: companies
+        })
+    }
+
+    setPartTypes = (company) => {
+        const types = this.props.companyList[company].partTypes.map((type, i)=>{
+            return(
+                <option key={i} value={type}>{type}</option>
+            )
+        });
+
+        this.setState({
+            showTypes: true,
+            types: types
+        });
+    }
+
     handleSubmit = (e) => {
         e.preventDefault();
-        console.log(this.state);
         if(this.state.data.company === "none" || this.state.data.type ==="none" || !this.state.data.file){
-            console.log(this.state);
             this.setState({
                 message: "REQUIRED FIELDS MUST BE FILLED"
             })
@@ -55,18 +98,21 @@ class CreateProduct extends Component {
                 <form onSubmit={this.handleSubmit}>
                     <label>
                         Company:
-                        <select name="company" onChange={this.handleChange} value={this.state.data.company} >
+                        <select name="company" onChange={this.handleChangeCompany} value={this.state.data.companyKey} >
                             <option value="none">Select Company</option>
-                            <option value="Gardner Denver">Gardner Denver</option>
+                            {this.state.companies}
                         </select>
                     </label>
-                    <label>
-                        Type:
-                        <select name="type" onChange={this.handleChange} value={this.state.data.type} >
-                            <option value="none">Select Category</option>
-                            <option value="Compressor Parts and More">Compressor Parts and More</option>
-                        </select>
-                    </label>
+                    {this.state.showTypes ? 
+                                        <label>
+                                            Type:
+                                            <select name="type" onChange={this.handleChangeType} value={this.state.data.type} >
+                                                <option value="none">Select Category</option>
+                                                {this.state.types}
+                                            </select>
+                                        </label> 
+                                    : null}
+                    
                     <label>
                         CSV File:
                         <input type="file" name="file" accept="*.csv" onChange={this.handleChangeFile} />

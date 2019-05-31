@@ -16,6 +16,7 @@ router.get('/', async (req, res)=>{
 });
 
 router.post('/csv', async (req, res)=>{
+    console.log(req.body);
     if (!req.files){
         res.json({
             status: 400,
@@ -38,6 +39,7 @@ router.post('/csv', async (req, res)=>{
                 partNumStr = partNumStr.replace(/ /g, "");
                 data.part_number = partNumStr;
                 data.company = req.body.company;
+                data.companyKey = req.body.companyKey;
                 data.type = req.body.type;
                 parts.push(data);
             }catch(err){

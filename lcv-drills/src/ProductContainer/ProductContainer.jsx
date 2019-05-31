@@ -69,6 +69,7 @@ class ProductContainer extends Component {
         data.append('file', childData.file);
         data.append('company', childData.company);
         data.append('type', childData.type);
+        data.append('companyKey', childData.companyKey);
         
         try{
             const response = await fetch('http://localhost:9000/parts/csv', {
@@ -95,8 +96,6 @@ class ProductContainer extends Component {
     }
 
     getTheParts = async (params) => {
-        console.log('gonna get the parts');
-        console.log(params);
         try{
             const stringURL = `http://localhost:9000/parts/browse/${params.company}/${params.type}`;
             const response = await fetch(stringURL);

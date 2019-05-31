@@ -10,7 +10,6 @@ class ProductList extends Component {
                 type: "none"
             },
             companyPicked: false,
-            canGetParts: true,
             companies: null,
             types: null,
             showTypes: false
@@ -63,17 +62,9 @@ class ProductList extends Component {
             data:{
                 ...this.state.data,
                 type: e.target.value
-            },
-            canGetParts: true
+            }
         });
         this.props.getTheParts(this.state.data);
-    }
-
-    checkFormCompletion = (e) => {
-            
-            this.setState({
-                canGetParts: false
-            })
     }
 
     render(){
