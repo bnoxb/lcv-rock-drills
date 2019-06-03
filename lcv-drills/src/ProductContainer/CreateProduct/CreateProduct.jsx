@@ -19,12 +19,12 @@ class CreateProduct extends Component {
         }
     }
 
-    componentDidMount(){
-        this.setCompanies();
-    }
-
     handleChangeCompany = (e) => {
+        console.log("########## hitting the handle change #########");
         const company = e.target.value;
+        console.log("THIS IS e.target.value/company>>>>: " + company);
+        console.log(this.props.companyList);
+        console.log(this.props.companyList[company].stringName);
         this.setState({
             data:{
                 ...this.state.data,
@@ -56,24 +56,15 @@ class CreateProduct extends Component {
         })
     }
 
-    setCompanies = () => {
-        const companies = Object.keys(this.props.companyList).map((company, i)=>{
-            return(
-                <option key={i} value={company}>{this.props.companyList[company].stringName}</option>
-            )
-        });
-        this.setState({
-            companies: companies
-        })
-    }
+    
 
     setPartTypes = (company) => {
-        const types = this.props.companyList[company].partTypes.map((type, i)=>{
+        const typeList = Object.keys(this.props.companyList[company].partTypes);
+        const types = typeList.map((type, i)=>{
             return(
                 <option key={i} value={type}>{type}</option>
             )
         });
-
         this.setState({
             showTypes: true,
             types: types
@@ -82,6 +73,8 @@ class CreateProduct extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
+        console.log("SENDING DATA FROM CREATE PRODUCT");
+        console.log(this.state.data);
         if(this.state.data.company === "none" || this.state.data.type ==="none" || !this.state.data.file){
             this.setState({
                 message: "REQUIRED FIELDS MUST BE FILLED"
@@ -100,7 +93,7 @@ class CreateProduct extends Component {
                         Company:
                         <select name="company" onChange={this.handleChangeCompany} value={this.state.data.companyKey} >
                             <option value="none">Select Company</option>
-                            {this.state.companies}
+                            {this.props.companyHTML}
                         </select>
                     </label>
                     {this.state.showTypes ? 
@@ -119,7 +112,7 @@ class CreateProduct extends Component {
                     </label>
                     <input type="submit" value="UPLOAD" />
                 </form>
-                <button onClick={this.props.closeForm.bind(null)}>Close Create Form</button>
+                <button name="createProduct" onClick={this.props.closeForm.bind(this)}>Close Create Form</button>
             </div>
         )
     }

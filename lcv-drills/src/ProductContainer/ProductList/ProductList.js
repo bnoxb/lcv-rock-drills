@@ -15,23 +15,13 @@ class ProductList extends Component {
             showTypes: false
         }
     }
-    componentDidMount(){
-        this.setCompanies();
-    }
-
-    setCompanies = () => {
-        const companies = Object.keys(this.props.companyList).map((company, i)=>{
-            return(
-                <option key={i} value={company}>{this.props.companyList[company].stringName}</option>
-            )
-        });
-        this.setState({
-            companies: companies
-        })
-    }
 
     setPartTypes = (company) => {
-        const types = this.props.companyList[company].partTypes.map((type, i)=>{
+
+        const typeList = Object.keys(this.props.companyList[company].partTypes);
+        console.log(typeList);
+
+        const types = typeList.map((type, i)=>{
             return(
                 <option key={i} value={type}>{type}</option>
             )
@@ -79,22 +69,22 @@ class ProductList extends Component {
         return(
             <div>
                 <form>
-                <label>
-                    Company:
-                    <select disabled={this.state.isDisabled} name="company" onChange={this.handleChangeCompany} value={this.state.data.companyKey} >
-                        <option value="none">Select Company</option>
-                        {this.state.companies}
-                    </select>
-                </label>
-                {this.state.showTypes ? <label>
-                                            Type:
-                                            <select name="type" onChange={this.handleChangeType} value={this.state.data.type} >
-                                                <option value="none">Select Category</option>
-                                                {this.state.types}
-                                            </select>
-                                        </label> 
-                                        : null}
-                
+                    <label>
+                        Company:
+                        <select disabled={this.state.isDisabled} name="company" onChange={this.handleChangeCompany} value={this.state.data.companyKey} >
+                            <option value="none">Select Company</option>
+                            {this.props.companyHTML}
+                        </select>
+                    </label>
+                    {this.state.showTypes ? <label>
+                                                Type:
+                                                <select name="type" onChange={this.handleChangeType} value={this.state.data.type} >
+                                                    <option value="none">Select Category</option>
+                                                    {this.state.types}
+                                                </select>
+                                            </label> 
+                                            : null}
+                    <button name="showProducts" onClick={this.props.closeForm.bind(this)}>Close Create Form</button>
                 </form>
                 <ul>
                     {parts}

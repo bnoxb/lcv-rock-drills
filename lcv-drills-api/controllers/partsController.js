@@ -35,9 +35,46 @@ router.post('/csv', async (req, res)=>{
         .on('data', async function(data){
 
             try{
-                let partNumStr = data.part_number;
-                partNumStr = partNumStr.replace(/ /g, "");
-                data.part_number = partNumStr;
+                if(req.body.companyKey !== "atlasCopCo" && req.body.companyKey != "ingersollRand"){
+                    let partNumStr = data.part_number;
+                    partNumStr = partNumStr.replace(/ /g, "");
+                    data.part_number = partNumStr;
+                    
+                } else {
+                    
+                    let partNum = data.part_number;
+
+                    if(data.part_number.length > 0){
+                        while(partNum.charAt(data.part_number.length - 1) === " "){
+                            partNum = partNum.slice(0, data.part_number.length - 1);
+                        }
+                        while(partNum.charAt(0) === " "){
+                            partNum = partNum.slice(0, 1);
+                        }
+                        data.part_number = partNum;
+                    }
+
+                    if(req.body.companyKey === "ingersollRand"){
+                        if(!data.part_number){
+                            data.part_number = " ";
+                        } else if(!data.new_part_number){
+                            data.new_part_number = " ";
+                        }
+
+                        if(data.new_part_number){
+                            let newPartNum = data.new_part_number;
+                            while(newPartNum.charAt(data.new_part_number.length - 1) === " "){
+                                newPartNum = newPartNum.slice(0, data.new_part_number.length - 1);
+                            }
+                            while(newPartNum.charAt(0) === " "){
+                                newPartNum = newPartNum.slice(0, 1);
+                            }
+                            data.new_part_number = newPartNum;
+                        }
+                    }
+
+                    
+                }
                 data.company = req.body.company;
                 data.companyKey = req.body.companyKey;
                 data.type = req.body.type;
@@ -51,6 +88,9 @@ router.post('/csv', async (req, res)=>{
             const createdParts = await Parts.create(parts);
             res.json({
                 status: 200,
+                company: req.body.company,
+                companyKey: req.body.companyKey,
+                type: req.body.type,
                 data: createdParts
             });
         });
@@ -59,11 +99,12 @@ router.post('/csv', async (req, res)=>{
     }
 });
 
-router.get('/browse/:company/:type', async (req, res)=>{
+router.get('/browse/:companyKey/:type', async (req, res)=>{
     try{
         const cleanCompany = decodeURI(req.params.company);
         const cleanType = decodeURI(req.params.type);
-        const foundParts = await Parts.find({ company: cleanCompany, type: cleanType });
+        console.log(req.params.companyKey);
+        const foundParts = await Parts.find({ companyKey: req.params.companyKey, type: cleanType });
 
         res.json({
             status: 200,
