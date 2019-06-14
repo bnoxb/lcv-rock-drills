@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ProductTables from './ProductTables/ProductTables';
 
 class ProductList extends Component {
     constructor(){
@@ -12,15 +13,14 @@ class ProductList extends Component {
             companyPicked: false,
             companies: null,
             types: null,
-            showTypes: false
+            showTypes: false,
+            showParts: false
         }
     }
 
     setPartTypes = (company) => {
 
         const typeList = Object.keys(this.props.companyList[company].partTypes);
-        console.log(typeList);
-
         const types = typeList.map((type, i)=>{
             return(
                 <option key={i} value={type}>{type}</option>
@@ -54,17 +54,15 @@ class ProductList extends Component {
                 type: e.target.value
             }
         });
+        this.props.toggleShowParts();
         this.props.getTheParts(this.state.data);
     }
 
+    
+
     render(){
-        const parts = this.props.partsList.map((part, i)=>{
-            return(
-                <li key={i}>
-                    <h1>{part.part_number}</h1>
-                </li>
-            )
-        })
+
+        
 
         return(
             <div>
@@ -84,11 +82,12 @@ class ProductList extends Component {
                                                 </select>
                                             </label> 
                                             : null}
-                    <button name="showProducts" onClick={this.props.closeForm.bind(this)}>Close Create Form</button>
+                    <button name="showProducts" onClick={this.props.closeForm.bind(this)}>Close Product List Form</button>
                 </form>
                 <ul>
-                    {parts}
+                    {/* {parts} */}
                 </ul>
+                { this.props.showParts ? <ProductTables partsList={this.props.partsList} selectedInfo={this.props.selectedInfo}/> : null }
             </div>
         )
     }

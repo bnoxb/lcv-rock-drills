@@ -1,0 +1,17 @@
+.firstCol{
+    border-right: solid 5px black;
+    background: pink;
+}
+
+.secondCol, .thirdCol{
+    border-left: solid 5px black;
+    border-right: solid 5px black;
+
+}
+.thirdCol{
+    background: pink;
+}
+
+.lastCol{
+    border-left: solid 5px black;
+}

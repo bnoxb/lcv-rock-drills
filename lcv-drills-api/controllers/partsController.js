@@ -113,6 +113,25 @@ router.get('/browse/:companyKey/:type', async (req, res)=>{
     }catch(err){
         console.log(err);
     }
+});
+
+router.get('/search/:partNum', async (req,res)=>{
+    console.log(req.params.partNum);
+    try{
+        const part = await Parts.findOne( {$or: [{"part_number" : req.params.partNum}, {"new_part_number": req.params.partNum}]});
+        console.log(part);
+        if(!part){
+            console.log("part not found");
+        }
+
+        res.json({
+            status: 200,
+            data: part
+        });
+
+    }catch(err){
+        console.log(err);
+    }
 })
 
 module.exports = router;
