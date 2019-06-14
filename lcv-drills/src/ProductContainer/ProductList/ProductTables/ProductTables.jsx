@@ -55,7 +55,13 @@ class ProductTables extends Component {
         super();
         this.state = {
             sortedParts: [],
-            theParts: null
+            theParts: null,
+            colComm: {
+                0: "firstCol",
+                1: "secondCol",
+                2: "thirdCol",
+                3: "lastCol"
+            }
         }
     }
 
@@ -81,7 +87,10 @@ class ProductTables extends Component {
                     col.push(this.props.partsList[i]);
                 }
             }
+            // set the new starting point for next group
             lastIndex += 1 + denom;
+
+            // organize rows with 4 groups in each row
             if(col.length > 0 && row.length < 4){
                 row.push(col);
             }else if (row.length === 4){
@@ -92,49 +101,38 @@ class ProductTables extends Component {
                 }
             }
         }
-        console.log(row.length);
+        // straggler rows
         if(row.length > 0){
             sortedParts.push(row);
         }
-
         await this.setState({
             sortedParts: sortedParts
         });
-        console.log("Sorted parts ", this.state.sortedParts);
         this.renderSortedParts();
-    }
-
-    determineClass = (index) => {
-        index++;
-        if(index % 4 === 0 ){
-            return "lastCol";
-        } else if (index % 3 === 0){
-            return "thirdCol";
-        } else if (index % 2 === 0 ) {
-            return "secondCol";
-        }else{
-            return "firstCol";
-        }
     }
 
     renderSortedParts = () => {
         const theParts = this.state.sortedParts.map((row, i) => {
+
             const theRow = row.map((col, i) => {
-                const className = this.determineClass(i);
+
                 const partsGroup = col.map((part, i)=> {
+
                     return(
                         <Part key={i}>
                             {part.part_number} - {part.new_part_number}
                         </Part>
                     )
-                })
+                });
+
                 return(
-                    <PartGroup key={i} className={className}>
+                    <PartGroup key={i} className={this.state.colComm[i]}>
                         <ColHeader>Part Number</ColHeader>
                         {partsGroup}
                     </PartGroup>
                 )
             });
+
             return(
                 <RowContainer>
                     <TableHeader1>{this.props.selectedInfo.company}</TableHeader1>
@@ -144,17 +142,16 @@ class ProductTables extends Component {
                     </Row>
                 </RowContainer>
             )
-        })
+        });
         
         this.setState({
             theParts
-        })
+        });
     }
 
     render(){
         return(
             <Wrapper>
-                
                 <Table>
                     {this.state.theParts}
                 </Table>

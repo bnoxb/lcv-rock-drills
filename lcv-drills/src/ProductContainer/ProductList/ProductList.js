@@ -14,7 +14,8 @@ class ProductList extends Component {
             companies: null,
             types: null,
             showTypes: false,
-            showParts: false
+            showParts: false,
+            isLoading: false,
         }
     }
 
@@ -32,7 +33,7 @@ class ProductList extends Component {
             types: types
         });
     }
-
+    
     handleChangeCompany = (e) => {
         const company = e.target.value;
 
@@ -56,9 +57,8 @@ class ProductList extends Component {
         });
         this.props.toggleShowParts();
         this.props.getTheParts(this.state.data);
+        this.props.handleLoading();
     }
-
-    
 
     render(){
 

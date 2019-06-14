@@ -20,11 +20,7 @@ class CreateProduct extends Component {
     }
 
     handleChangeCompany = (e) => {
-        console.log("########## hitting the handle change #########");
         const company = e.target.value;
-        console.log("THIS IS e.target.value/company>>>>: " + company);
-        console.log(this.props.companyList);
-        console.log(this.props.companyList[company].stringName);
         this.setState({
             data:{
                 ...this.state.data,
@@ -73,8 +69,6 @@ class CreateProduct extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        console.log("SENDING DATA FROM CREATE PRODUCT");
-        console.log(this.state.data);
         if(this.state.data.company === "none" || this.state.data.type ==="none" || !this.state.data.file){
             this.setState({
                 message: "REQUIRED FIELDS MUST BE FILLED"

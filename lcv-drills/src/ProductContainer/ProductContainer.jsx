@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import CreateProduct from './CreateProduct/CreateProduct';
 import ProductList from './ProductList/ProductList';
 import SearchProducts from './SearchProducts/SearchProducts';
+import { ShowProduct } from './ShowProduct/ShowProduct';
+
 
 class ProductContainer extends Component {
     constructor(){
@@ -50,11 +52,16 @@ class ProductContainer extends Component {
                 }
             },
             companyHTML: null,
-            partsList: [],
+            parts: [],
             selectedCompanyAndType: {
                 company: "",
                 type: ""
-            }
+            },
+            search: {
+                part: {},
+                showPart: false,
+            },
+            isLoading: false
         }
     }
 
@@ -154,8 +161,8 @@ class ProductContainer extends Component {
 
     getTheParts = async (params) => {
         try{
+            // checks to see if the selected parts have already been fetched, if not then get them from the db
             if(this.state.companyList[params.companyKey].partTypes[params.type].length < 1){
-
                 const stringURL = `http://localhost:9000/parts/browse/${params.companyKey}/${params.type}`;
                 const response = await fetch(stringURL);
 
@@ -163,8 +170,8 @@ class ProductContainer extends Component {
                     throw Error(response.statusText);
                 }
 
-                const parsedResponse = await response.json();    
-
+                const parsedResponse = await response.json();
+                // store the fetched parts in companyList then set them to partsList to be displayed
                 this.setState({
                     companyList: {
                         ...this.state.companyList,
@@ -176,27 +183,67 @@ class ProductContainer extends Component {
                             }
                         }
                     },
-                    partsList: parsedResponse.data,
+                    parts: parsedResponse.data,
                     selectedCompanyAndType: {
                         company: params.company,
                         type: params.type
                     },
-                    showParts: true
+                    showParts: true,
+                    isLoading: false
                 })
             }else {
+                // set the 
                 this.setState({
-                    partsList: this.state.companyList[params.companyKey].partTypes[params.type],
+                    parts: this.state.companyList[params.companyKey].partTypes[params.type],
                     showParts: true,
                     selectedCompanyAndType: {
                         company: params.company,
                         type: params.type
-                    }
+                    },
+                    isLoading: false
                 });
             }
 
         }catch(err){
             console.log(err);
         }
+    }
+
+    handleSearch = async (reqNum) => {
+        try{
+            const response = await fetch('http://localhost:9000/parts/search/' + reqNum);
+            if(!response.ok){
+                throw Error(response.statusText);
+            }
+
+            const parsedResponse = await response.json();
+
+            this.setState({
+                search: {
+                    part: parsedResponse.data,
+                    showPart: true,
+                },
+                isLoading: false
+            });
+        }catch(err){
+            console.log(err);
+        }
+    }
+
+    closeShowPart = () => {
+        this.setState({
+            search:{
+                ...this.state.search,
+                showPart: false
+            }
+        })
+    }
+
+    handleLoading = () => {
+        console.log('handling lading');
+        this.setState({
+            isLoading: true
+        })
     }
 
     render(){
@@ -207,21 +254,35 @@ class ProductContainer extends Component {
                                                 closeForm={this.closeForm} 
                                                 upload={this.upload} 
                                                 companyList={this.state.companyList} 
-                                                companyHTML={this.state.companyHTML}/> 
+                                                companyHTML={this.state.companyHTML}
+                                                handleLoading={this.handleLoading} /> 
                                             : <button onClick={this.createButton}>UPLOAD CSV</button> }
+
                 {this.state.showProducts ? <ProductList 
-                                                partsList={this.state.partsList} 
+                                                partsList={this.state.parts} 
                                                 selectedInfo={this.state.selectedCompanyAndType}
                                                 closeForm={this.closeForm} 
                                                 getTheParts={this.getTheParts} 
                                                 companyList={this.state.companyList} 
                                                 companyHTML={this.state.companyHTML} 
                                                 showParts={this.state.showParts}
-                                                toggleShowParts={this.toggleShowParts} /> 
+                                                toggleShowParts={this.toggleShowParts} 
+                                                handleLoading={this.handleLoading} /> 
                                             : <button onClick={this.showListButton}>Browse Parts</button>}
+
                 {this.state.showSearch ? <SearchProducts 
-                                                closeForm={this.closeForm} /> 
+                                                closeForm={this.closeForm}
+                                                handleLoading={this.handleLoading}
+                                                part={this.state.search.part} 
+                                                showPart={this.state.search.showPart}
+                                                closeShowPart={this.closeShowPart}
+                                                handleSearch={this.handleSearch} /> 
                                             : <button onClick={this.searchButton}>Search Parts</button>}
+
+                { this.state.search.showPart ? <ShowProduct part={this.state.search.part} /> : null }
+
+                { this.state.isLoading ? <h1>LOADINGG</h1> : null}
+
             </div>
 
         )
