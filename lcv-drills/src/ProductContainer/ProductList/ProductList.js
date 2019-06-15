@@ -1,5 +1,29 @@
 import React, { Component } from 'react';
 import ProductTables from './ProductTables/ProductTables';
+import styled from 'styled-components';
+
+const RadioLabel = styled.label`
+    display: inline-block;
+    backgroud-color:#ddd;
+    padding: 10px 20px;
+    font-family: Arial;
+    font-size: 16px;
+    border: 2px solid #444;
+    border-radius: 4px;
+    &:hover {
+        background-color:#dfd;
+    }
+    
+   
+`
+
+const Radio = styled.input`
+    display: none;
+    &:checked + ${RadioLabel} {
+        background-color:#bfb;
+        border-color:#4c4;
+    }
+`
 
 
 
@@ -21,20 +45,25 @@ class ProductList extends Component {
         }
     }
 
-    handleChangeCompany = (e) => {
-        const company = e.target.value;
-        const string = this.props.getCompanyName(company);
+    componentDidMount(){
+        this.setCompanies();
+    }
 
-        this.setState({
+    handleChangeCompany = async (e) => {
+        console.log("CLICKed", e.target.value);
+        const company = e.target.value;
+        const string = this.props.companyNames[company];
+
+        await this.setState({
             data:{
                 ...this.state.data,
                 company: string,
                 companyKey: company
             },
         });
-
+        this.setCompanies();
         this.props.toggleShowParts();
-        this.props.setPartTypes(company);
+        // this.setPartTypes(company);
     }
 
     handleChangeType = async (e) => {
@@ -49,6 +78,38 @@ class ProductList extends Component {
         this.props.handleLoading();
     }
 
+    setPartTypes = (company) => {
+        const typeNames = Object.keys(this.state.companyList[company].partTypes);
+        const types = typeNames.map((type, i)=>{
+            return(
+                <option key={i} value={type}>{type}</option>
+            )
+        });
+
+        this.setState({
+            typeHTML: types,
+            showTypes: true,
+            typeNames: typeNames
+        });
+    }
+
+    setCompanies = () => {
+        
+        const companies = Object.keys(this.props.companyNames).map((company, i)=>{
+            return(
+                <div key={i}>
+                        <Radio type="radio" value={company} name="companies" id={company} onChange={this.handleChangeCompany} checked={this.state.data.companyKey === company}/>
+                        <RadioLabel htmlFor={company}>{this.props.companyNames[company]}</RadioLabel>
+                </div>
+                    
+            )
+        });
+        this.setState({
+            companies,
+            showTypes: true
+        })
+    }
+
     handleClick = (e) => {
         console.log('in the handlClick')
         e.preventDefault();
@@ -56,9 +117,6 @@ class ProductList extends Component {
     }
 
     render(){
-
-        
-
         return(
             <div>
                 {/* <form>
@@ -81,7 +139,7 @@ class ProductList extends Component {
                 </form> */}
 
                 <form>
-                    {this.props.companyHTML}
+                    {this.state.companies}
                 </form>
 
                 <ul>

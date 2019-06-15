@@ -3,7 +3,6 @@ import CreateProduct from './CreateProduct/CreateProduct';
 import ProductList from './ProductList/ProductList';
 import SearchProducts from './SearchProducts/SearchProducts';
 import { ShowProduct } from './ShowProduct/ShowProduct';
-import styled from 'styled-components';
 
 
 
@@ -56,7 +55,13 @@ class ProductContainer extends Component {
                     },
                 }
             },
-            companyNames: [],
+            companyNames: {
+                gardnerDenver: "Gardner Denver",
+                atlasCopCo: "Atlas Copco",
+                joy: "Joy",
+                chicagoPneumatic: "ChicagoPneumatic",
+                ingersollRand: "Ingersoll Rand"
+            },
             typeNames: [],
             companyHTML: null,
             typeHTML: null,
@@ -71,10 +76,6 @@ class ProductContainer extends Component {
             },
             isLoading: false
         }
-    }
-
-    componentDidMount(){
-        this.setCompanies();
     }
 
     searchButton = () => {
@@ -109,40 +110,6 @@ class ProductContainer extends Component {
             [e.target.name]: false,
             showParts: false,
             isLoading: false
-        })
-    }
-
-    setPartTypes = (company) => {
-        const typeNames = Object.keys(this.state.companyList[company].partTypes);
-        const types = typeNames.map((type, i)=>{
-            return(
-                <option key={i} value={type}>{type}</option>
-            )
-        });
-
-        this.setState({
-            typeHTML: types,
-            showTypes: true,
-            typeNames: typeNames
-        });
-    }
-
-    setCompanies = () => {
-        const companyNames = [];
-        const companies = Object.keys(this.state.companyList).map((company, i)=>{
-            companyNames.push(this.state.companyList[company].stringName);
-            return(
-                <li key={i}>
-                    <RadioLabel>
-                        <Radio type="radio" value={company} onChange={this.handleClick} />
-                        {this.state.companyList[company].stringName}
-                    </RadioLabel>
-                </li>
-            )
-        });
-        this.setState({
-            companyHTML: companies,
-            companyNames: companyNames
         })
     }
 
@@ -292,13 +259,12 @@ class ProductContainer extends Component {
                                                 closeForm={this.closeForm} 
                                                 selectedInfo={this.state.selectedCompanyAndType}
                                                 getTheParts={this.getTheParts} 
-                                                getCompanyName={this.getCompanyName}
+                                                companyNames={this.state.companyNames}
                                                 companyHTML={this.state.companyHTML} 
                                                 typeHTML={this.state.typeHTML}
                                                 showParts={this.state.showParts}
                                                 showTypes={this.state.showTypes}
                                                 toggleShowParts={this.toggleShowParts}
-                                                toggleShowTypes={this.toggleShowTypes}
                                                 setPartTypes={this.setPartTypes}
                                                 handleLoading={this.handleLoading} /> 
                                             : <button onClick={this.showListButton}>Browse Parts</button>}
@@ -323,26 +289,5 @@ class ProductContainer extends Component {
 }
 
 
-const RadioLabel = styled.label`
-    display: inline-block;
-    backgroud-color:#ddd;
-    padding: 10px 20px;
-    font-family: Arial;
-    font-size: 16px;
-    border: 2px solid #444;
-    border-radius: 4px;
-    &:hover {
-        background-color:#dfd;
-    }
-   
-`
-
-const Radio = styled.input`
-    display: none;
-    &:checked + ${RadioLabel}{
-        background-color:#bfb;
-        border-color:#4c4;
-    }
-`
 
 export default ProductContainer;
