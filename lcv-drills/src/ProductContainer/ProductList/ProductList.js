@@ -19,33 +19,20 @@ class ProductList extends Component {
         }
     }
 
-    setPartTypes = (company) => {
-
-        const typeList = Object.keys(this.props.companyList[company].partTypes);
-        const types = typeList.map((type, i)=>{
-            return(
-                <option key={i} value={type}>{type}</option>
-            )
-        });
-
-        this.setState({
-            showTypes: true,
-            types: types
-        });
-    }
-    
     handleChangeCompany = (e) => {
         const company = e.target.value;
+        const string = this.props.getCompanyName(company);
 
         this.setState({
             data:{
                 ...this.state.data,
-                company: this.props.companyList[company].stringName,
+                type: null,
+                company: string,
                 companyKey: company
             },
         });
 
-        this.setPartTypes(company);
+        this.props.setPartTypes(company);
     }
 
     handleChangeType = async (e) => {
@@ -74,11 +61,11 @@ class ProductList extends Component {
                             {this.props.companyHTML}
                         </select>
                     </label>
-                    {this.state.showTypes ? <label>
+                    {this.props.showTypes ? <label>
                                                 Type:
                                                 <select name="type" onChange={this.handleChangeType} value={this.state.data.type} >
                                                     <option value="none">Select Category</option>
-                                                    {this.state.types}
+                                                    {this.props.typeHTML}
                                                 </select>
                                             </label> 
                                             : null}

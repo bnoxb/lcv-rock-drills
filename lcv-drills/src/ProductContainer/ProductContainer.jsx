@@ -11,9 +11,12 @@ class ProductContainer extends Component {
         this.state = {
             createProduct: false,
             showProducts: false,
-            showParts: false,
             showSearch: false,
             message: "",
+            parts: [],
+
+            showTypes: false,
+            showParts: false,
             companyList: {
                 gardnerDenver: {
                     stringName: "Gardner Denver",
@@ -51,15 +54,18 @@ class ProductContainer extends Component {
                     },
                 }
             },
+            companyNames: [],
+            typeNames: [],
             companyHTML: null,
-            parts: [],
+            typeHTML: null,
+
             selectedCompanyAndType: {
                 company: "",
                 type: ""
             },
+
             search: {
                 part: {},
-                showPart: false,
             },
             isLoading: false
         }
@@ -102,15 +108,37 @@ class ProductContainer extends Component {
         })
     }
 
+    setPartTypes = (company) => {
+        const typeNames = Object.keys(this.state.companyList[company].partTypes);
+        const types = typeNames.map((type, i)=>{
+            return(
+                <option key={i} value={type}>{type}</option>
+            )
+        });
+
+        this.setState({
+            typeHTML: types,
+            showTypes: true,
+            typeNames: typeNames
+        });
+    }
+
     setCompanies = () => {
+        const companyNames = [];
         const companies = Object.keys(this.state.companyList).map((company, i)=>{
+            companyNames.push(this.state.companyList[company].stringName);
             return(
                 <option key={i} value={company}>{this.state.companyList[company].stringName}</option>
             )
         });
         this.setState({
-            companyHTML: companies
+            companyHTML: companies,
+            companyNames: companyNames
         })
+    }
+
+    getCompanyName = (companyKey) => {
+        return this.state.companyList[companyKey].stringName;
     }
 
     upload = async (childData) => {
@@ -230,15 +258,6 @@ class ProductContainer extends Component {
         }
     }
 
-    closeShowPart = () => {
-        this.setState({
-            search:{
-                ...this.state.search,
-                showPart: false
-            }
-        })
-    }
-
     handleLoading = () => {
         console.log('handling lading');
         this.setState({
@@ -260,13 +279,17 @@ class ProductContainer extends Component {
 
                 {this.state.showProducts ? <ProductList 
                                                 partsList={this.state.parts} 
-                                                selectedInfo={this.state.selectedCompanyAndType}
                                                 closeForm={this.closeForm} 
+                                                selectedInfo={this.state.selectedCompanyAndType}
                                                 getTheParts={this.getTheParts} 
-                                                companyList={this.state.companyList} 
+                                                getCompanyName={this.getCompanyName}
                                                 companyHTML={this.state.companyHTML} 
+                                                typeHTML={this.state.typeHTML}
                                                 showParts={this.state.showParts}
-                                                toggleShowParts={this.toggleShowParts} 
+                                                showTypes={this.state.showTypes}
+                                                toggleShowParts={this.toggleShowParts}
+                                                toggleShowTypes={this.toggleShowTypes}
+                                                setPartTypes={this.setPartTypes}
                                                 handleLoading={this.handleLoading} /> 
                                             : <button onClick={this.showListButton}>Browse Parts</button>}
 
