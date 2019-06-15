@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ProductTables from './ProductTables/ProductTables';
 
+
+
 class ProductList extends Component {
     constructor(){
         super();
@@ -26,12 +28,12 @@ class ProductList extends Component {
         this.setState({
             data:{
                 ...this.state.data,
-                type: null,
                 company: string,
                 companyKey: company
             },
         });
 
+        this.props.toggleShowParts();
         this.props.setPartTypes(company);
     }
 
@@ -47,13 +49,19 @@ class ProductList extends Component {
         this.props.handleLoading();
     }
 
+    handleClick = (e) => {
+        console.log('in the handlClick')
+        e.preventDefault();
+        console.log(e.target.value);
+    }
+
     render(){
 
         
 
         return(
             <div>
-                <form>
+                {/* <form>
                     <label>
                         Company:
                         <select disabled={this.state.isDisabled} name="company" onChange={this.handleChangeCompany} value={this.state.data.companyKey} >
@@ -70,7 +78,12 @@ class ProductList extends Component {
                                             </label> 
                                             : null}
                     <button name="showProducts" onClick={this.props.closeForm.bind(this)}>Close Product List Form</button>
+                </form> */}
+
+                <form>
+                    {this.props.companyHTML}
                 </form>
+
                 <ul>
                     {/* {parts} */}
                 </ul>
@@ -79,5 +92,8 @@ class ProductList extends Component {
         )
     }
 }
+
+
+
 
 export default ProductList;

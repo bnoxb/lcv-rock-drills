@@ -3,6 +3,8 @@ import CreateProduct from './CreateProduct/CreateProduct';
 import ProductList from './ProductList/ProductList';
 import SearchProducts from './SearchProducts/SearchProducts';
 import { ShowProduct } from './ShowProduct/ShowProduct';
+import styled from 'styled-components';
+
 
 
 class ProductContainer extends Component {
@@ -104,7 +106,9 @@ class ProductContainer extends Component {
 
     closeForm = (e) => {
         this.setState({
-            [e.target.name]: false
+            [e.target.name]: false,
+            showParts: false,
+            isLoading: false
         })
     }
 
@@ -128,7 +132,12 @@ class ProductContainer extends Component {
         const companies = Object.keys(this.state.companyList).map((company, i)=>{
             companyNames.push(this.state.companyList[company].stringName);
             return(
-                <option key={i} value={company}>{this.state.companyList[company].stringName}</option>
+                <li key={i}>
+                    <RadioLabel>
+                        <Radio type="radio" value={company} onChange={this.handleClick} />
+                        {this.state.companyList[company].stringName}
+                    </RadioLabel>
+                </li>
             )
         });
         this.setState({
@@ -189,6 +198,7 @@ class ProductContainer extends Component {
 
     getTheParts = async (params) => {
         try{
+            console.log(this.state);
             // checks to see if the selected parts have already been fetched, if not then get them from the db
             if(this.state.companyList[params.companyKey].partTypes[params.type].length < 1){
                 const stringURL = `http://localhost:9000/parts/browse/${params.companyKey}/${params.type}`;
@@ -258,8 +268,8 @@ class ProductContainer extends Component {
         }
     }
 
+
     handleLoading = () => {
-        console.log('handling lading');
         this.setState({
             isLoading: true
         })
@@ -311,5 +321,28 @@ class ProductContainer extends Component {
         )
     }
 }
+
+
+const RadioLabel = styled.label`
+    display: inline-block;
+    backgroud-color:#ddd;
+    padding: 10px 20px;
+    font-family: Arial;
+    font-size: 16px;
+    border: 2px solid #444;
+    border-radius: 4px;
+    &:hover {
+        background-color:#dfd;
+    }
+   
+`
+
+const Radio = styled.input`
+    display: none;
+    &:checked + ${RadioLabel}{
+        background-color:#bfb;
+        border-color:#4c4;
+    }
+`
 
 export default ProductContainer;
