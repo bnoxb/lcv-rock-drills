@@ -1,28 +1,45 @@
 import React, { Component } from 'react';
-import ProductTables from './ProductTables/ProductTables';
 import styled from 'styled-components';
 
 const RadioLabel = styled.label`
-    display: inline-block;
+    display: flex;
     backgroud-color:#ddd;
     padding: 10px 20px;
     font-family: Arial;
     font-size: 16px;
-    border: 2px solid #444;
-    border-radius: 4px;
+    border-radius: 1rem;
+    color: white;
     &:hover {
-        background-color:#dfd;
+        background-color:#F99058;
+        color: black;
     }
     
-   
 `
 
 const Radio = styled.input`
     display: none;
     &:checked + ${RadioLabel} {
-        background-color:#bfb;
-        border-color:#4c4;
+        background-color:#F99058;
+        color: black;
     }
+`
+
+const Item = styled.div`
+    display: flex;
+    
+`
+
+const Form = styled.form`
+    display: flex;
+    margin-left: 5rem;
+    
+`
+
+const Wrapper = styled.div`
+    display: flex wrap;
+    justify-content: center;
+    
+    align-items: center;
 `
 
 
@@ -36,12 +53,10 @@ class ProductList extends Component {
                 company: "none",
                 type: "none"
             },
-            companyPicked: false,
             companies: null,
             types: null,
             showTypes: false,
-            showParts: false,
-            isLoading: false,
+            shouldRefresh: false
         }
     }
 
@@ -49,8 +64,25 @@ class ProductList extends Component {
         this.setCompanies();
     }
 
+    async componentDidUpdate(){
+        if(this.props.shouldRefresh !== this.state.shouldRefresh){
+            await this.setState({
+                data: {
+                    companyKey: "none",
+                    company: "none",
+                    type: "none"
+                },
+                types: null,
+                showTypes:false,
+                shouldRefresh: this.props.shouldRefresh
+            });
+            this.setCompanies();
+        }
+
+        
+    }
+
     handleChangeCompany = async (e) => {
-        console.log("CLICKed", e.target.value);
         const company = e.target.value;
         const string = this.props.companyNames[company];
 
@@ -63,7 +95,7 @@ class ProductList extends Component {
         });
         this.setCompanies();
         this.props.toggleShowParts();
-        // this.setPartTypes(company);
+        this.setPartTypes(this.props.getCompanyTypes(company));
     }
 
     handleChangeType = async (e) => {
@@ -73,23 +105,27 @@ class ProductList extends Component {
                 type: e.target.value
             }
         });
+        
+        this.setPartTypes(this.props.getCompanyTypes(this.state.data.companyKey));
+
         this.props.toggleShowParts();
         this.props.getTheParts(this.state.data);
         this.props.handleLoading();
     }
 
-    setPartTypes = (company) => {
-        const typeNames = Object.keys(this.state.companyList[company].partTypes);
+    setPartTypes = (typeNames) => {
         const types = typeNames.map((type, i)=>{
             return(
-                <option key={i} value={type}>{type}</option>
+                <Item key={i}>
+                        <Radio type="radio" value={type} name="types" id={type} onChange={this.handleChangeType} checked={this.state.data.type === type}/>
+                        <RadioLabel htmlFor={type}>{type}</RadioLabel>
+                </Item>
             )
         });
 
         this.setState({
-            typeHTML: types,
+            types,
             showTypes: true,
-            typeNames: typeNames
         });
     }
 
@@ -97,28 +133,22 @@ class ProductList extends Component {
         
         const companies = Object.keys(this.props.companyNames).map((company, i)=>{
             return(
-                <div key={i}>
+                <Item key={i}>
                         <Radio type="radio" value={company} name="companies" id={company} onChange={this.handleChangeCompany} checked={this.state.data.companyKey === company}/>
                         <RadioLabel htmlFor={company}>{this.props.companyNames[company]}</RadioLabel>
-                </div>
+                </Item>
                     
             )
         });
         this.setState({
             companies,
-            showTypes: true
         })
     }
 
-    handleClick = (e) => {
-        console.log('in the handlClick')
-        e.preventDefault();
-        console.log(e.target.value);
-    }
-
     render(){
+        
         return(
-            <div>
+            <Wrapper>
                 {/* <form>
                     <label>
                         Company:
@@ -138,15 +168,14 @@ class ProductList extends Component {
                     <button name="showProducts" onClick={this.props.closeForm.bind(this)}>Close Product List Form</button>
                 </form> */}
 
-                <form>
+                <Form>
                     {this.state.companies}
-                </form>
-
-                <ul>
-                    {/* {parts} */}
-                </ul>
-                { this.props.showParts ? <ProductTables partsList={this.props.partsList} selectedInfo={this.props.selectedInfo}/> : null }
-            </div>
+                </Form>
+                {this.state.showTypes ? <Form>
+                                            {this.state.types}
+                                        </Form>
+                                        : null}
+            </Wrapper>
         )
     }
 }

@@ -134,10 +134,10 @@ class ProductTables extends Component {
             });
 
             return(
-                <RowContainer>
+                <RowContainer key={i}>
                     <TableHeader1>{this.props.selectedInfo.company}</TableHeader1>
                     <TableHeader2>{this.props.selectedInfo.type}</TableHeader2>
-                    <Row key={i}>
+                    <Row >
                         {theRow}
                     </Row>
                 </RowContainer>
